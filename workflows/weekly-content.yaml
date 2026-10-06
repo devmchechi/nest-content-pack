@@ -1,0 +1,46 @@
+id: weekly-content
+name: Weekly Content
+steps:
+  - id: draft
+    agent: blog-draft-writer
+    critical: true
+    input: >-
+      Write this week's blog draft. Take the first topic in ./content/ideas.md that is not marked
+      done (if the file is missing, propose three angles for the audience in your instructions.md
+      and draft the strongest one). Use any related notes in ./content/notes/. Save it to
+      ./drafts/ and end your reply with the complete draft, frontmatter included, in a
+      ~~~~markdown fence. The next agents cannot see your files; they only get your reply.
+  - id: seo
+    agent: seo-analyzer
+    on_failure: continue
+    input: >-
+      Audit the blog draft in the ~~~~markdown fence below. Use its primary_keyword frontmatter
+      as the target. Return the score, the fixes in priority order, and the title and meta
+      rewrites.
+
+      {{draft.output}}
+  - id: revise
+    agent: blog-draft-writer
+    input: >-
+      Revise the draft you saved earlier in ./drafts/ (it is also in full below), applying the
+      high- and medium-impact SEO fixes where they make the post better for readers. Skip any
+      that would make it read worse, and say which you skipped and why. If the audit is empty,
+      do a final self-edit instead. Keep status: draft, and end your reply with the complete
+      revised draft in a ~~~~markdown fence.
+
+      Draft:
+      {{draft.output}}
+
+      SEO audit:
+      {{seo.output}}
+  - id: newsletter
+    agent: newsletter-formatter
+    requires_approval: true
+    input: >-
+      Build this week's newsletter issue. Feature the revised blog post in the ~~~~markdown fence
+      below, and add the links collected in ./newsletter/inbox.md in your own working directory.
+      Save the Markdown and HTML issue files to ./newsletter/, list the placeholders left to fill
+      in, and end with the complete Markdown issue.
+
+      Revised post:
+      {{revise.output}}

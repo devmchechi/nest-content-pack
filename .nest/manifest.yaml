@@ -1,0 +1,7 @@
+id: content-pack
+name: Content Pack
+description: Draft blog posts in your voice, audit them for SEO, and assemble a paste-ready newsletter issue each week.
+version: 1.0.0
+min_nest_version: 0.1.0
+agents: [blog-draft-writer, newsletter-formatter, seo-analyzer]
+workflows: [weekly-content]
